@@ -58,9 +58,24 @@ class Date extends Column
                 }
             } elseif (is_array($requestedDates)) {
                 foreach ($requestedDates as $value) {
+                    $from = $value[0] ?? '';
+                    $to = $value[1] ?? '';
+
+                    if (empty($from) && empty($to)) {
+                        continue;
+                    }
+
+                    if (empty($to)) {
+                        $to = $from;
+                    }
+
+                    if (empty($from)) {
+                        $from = $to;
+                    }
+
                     $scopeQueryBuilder->whereBetween($this->columnName, [
-                        $value[0] ? (str_contains($value[0], ' ') ? $value[0] : $value[0].' 00:00:01') : '',
-                        $value[1] ? (str_contains($value[1], ' ') ? $value[1] : $value[1].' 23:59:59') : '',
+                        str_contains($from, ' ') ? $from : $from.' 00:00:01',
+                        str_contains($to, ' ') ? $to : $to.' 23:59:59',
                     ]);
                 }
             } else {

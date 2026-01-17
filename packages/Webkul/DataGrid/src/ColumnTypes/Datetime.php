@@ -58,7 +58,22 @@ class Datetime extends Column
                 }
             } elseif (is_array($requestedDates)) {
                 foreach ($requestedDates as $value) {
-                    $scopeQueryBuilder->whereBetween($this->columnName, [$value[0] ?? '', $value[1] ?? '']);
+                    $from = $value[0] ?? '';
+                    $to = $value[1] ?? '';
+
+                    if (empty($from) && empty($to)) {
+                        continue;
+                    }
+
+                    if (empty($to)) {
+                        $to = $from;
+                    }
+
+                    if (empty($from)) {
+                        $from = $to;
+                    }
+
+                    $scopeQueryBuilder->whereBetween($this->columnName, [$from, $to]);
                 }
             } else {
                 throw new InvalidColumnExpressionException('Only string and array are allowed for datetime column type.');
